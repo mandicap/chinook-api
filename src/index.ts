@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import albums from '@/routes/albums';
+import artists from '@/routes/artists';
 
 const app = new Hono();
 
@@ -8,6 +9,7 @@ app.get('/health', (c) => {
 });
 
 app.route('/albums', albums);
+app.route('/artists', artists);
 
 export default {
     port: process.env.PORT || 3000,

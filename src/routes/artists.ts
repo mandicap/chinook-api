@@ -1,30 +1,25 @@
 import { Hono } from 'hono';
 import { validator } from 'hono-openapi';
 import db from '@/db';
-import { album } from '@/db/schema';
+import { artist } from '@/db/schema';
 import { querySchema } from '@/utils/schema';
 
-const albums = new Hono();
+const artists = new Hono();
 
-albums.get('/', validator('query', querySchema), async (c) => {
+artists.get('/', validator('query', querySchema), async (c) => {
     const { limit, page } = c.req.valid('query');
     const offset = (page - 1) * limit;
 
-    // TODO: add max(totalItems) to querySchema.limit and max(totalPages) to
-    // querySchema.page
-    const totalItems = await db.$count(album);
+    const totalItems = await db.$count(artist);
     const totalPages = Math.ceil(totalItems / limit);
 
-    const albums = await db.query.album.findMany({
-        with: {
-            artist: true,
-        },
+    const artists = await db.query.artist.findMany({
         limit,
         offset,
     });
 
     return c.json({
-        data: albums,
+        data: artists,
         pagination: {
             currentPage: page,
             perPage: limit,
@@ -34,4 +29,4 @@ albums.get('/', validator('query', querySchema), async (c) => {
     });
 });
 
-export default albums;
+export default artists;
