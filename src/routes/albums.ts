@@ -3,9 +3,9 @@ import { validator } from 'hono-openapi';
 import db from '@/db';
 import { querySchema } from '@/utils/schema';
 
-const app = new Hono();
+const albums = new Hono();
 
-app.get('/', validator('query', querySchema), async (c) => {
+albums.get('/', validator('query', querySchema), async (c) => {
     const { limit, page } = c.req.valid('query');
     const offset = (page - 1) * limit;
 
@@ -20,4 +20,4 @@ app.get('/', validator('query', querySchema), async (c) => {
     return c.json(albums);
 });
 
-export default app;
+export default albums;

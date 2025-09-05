@@ -4,8 +4,7 @@
         "jsx": "react-jsx",
         "jsxImportSource": "hono/jsx",
         "paths": {
-            "@/*": ["./src/*"],
-            "@/utils/*": ["./utils/*"]
+            "@/*": ["./src/*"]
         }
     }
 }
