@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
-import albums from './routes/albums';
+import albums from '@/routes/albums';
 
 const app = new Hono();
 
-app.get('/', (c) => {
-    return c.text('Hello Hono!');
+app.get('/health', (c) => {
+    return c.json({ status: 'ok', message: 'API is healthy' });
 });
 
 app.route('/albums', albums);
