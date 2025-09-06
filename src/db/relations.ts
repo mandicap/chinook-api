@@ -6,17 +6,17 @@ import {
     employee,
     genre,
     invoice,
-    invoiceLine,
-    mediaType,
+    invoice_line,
+    media_type,
     playlist,
-    playlistTrack,
+    playlist_track,
     track,
 } from './schema';
 
 export const albumRelations = relations(album, ({ one, many }) => ({
     artist: one(artist, {
-        fields: [album.artistId],
-        references: [artist.artistId],
+        fields: [album.artist_id],
+        references: [artist.artist_id],
     }),
     tracks: many(track),
 }));
@@ -27,79 +27,79 @@ export const artistRelations = relations(artist, ({ many }) => ({
 
 export const employeeRelations = relations(employee, ({ one, many }) => ({
     employee: one(employee, {
-        fields: [employee.reportsTo],
-        references: [employee.employeeId],
-        relationName: 'employee_reportsTo_employee_employeeId',
+        fields: [employee.reports_to],
+        references: [employee.employee_id],
+        relationName: 'employee_reports_to_employee_employee_id',
     }),
     employees: many(employee, {
-        relationName: 'employee_reportsTo_employee_employeeId',
+        relationName: 'employee_reports_to_employee_employee_id',
     }),
     customers: many(customer),
 }));
 
 export const customerRelations = relations(customer, ({ one, many }) => ({
     employee: one(employee, {
-        fields: [customer.supportRepId],
-        references: [employee.employeeId],
+        fields: [customer.support_rep_id],
+        references: [employee.employee_id],
     }),
     invoices: many(invoice),
 }));
 
 export const invoiceRelations = relations(invoice, ({ one, many }) => ({
     customer: one(customer, {
-        fields: [invoice.customerId],
-        references: [customer.customerId],
+        fields: [invoice.customer_id],
+        references: [customer.customer_id],
     }),
-    invoiceLines: many(invoiceLine),
+    invoice_lines: many(invoice_line),
 }));
 
-export const invoiceLineRelations = relations(invoiceLine, ({ one }) => ({
+export const invoice_lineRelations = relations(invoice_line, ({ one }) => ({
     invoice: one(invoice, {
-        fields: [invoiceLine.invoiceId],
-        references: [invoice.invoiceId],
+        fields: [invoice_line.invoice_id],
+        references: [invoice.invoice_id],
     }),
     track: one(track, {
-        fields: [invoiceLine.trackId],
-        references: [track.trackId],
+        fields: [invoice_line.track_id],
+        references: [track.track_id],
     }),
 }));
 
 export const trackRelations = relations(track, ({ one, many }) => ({
-    invoiceLines: many(invoiceLine),
+    invoice_lines: many(invoice_line),
     album: one(album, {
-        fields: [track.albumId],
-        references: [album.albumId],
+        fields: [track.album_id],
+        references: [album.album_id],
     }),
     genre: one(genre, {
-        fields: [track.genreId],
-        references: [genre.genreId],
+        fields: [track.genre_id],
+        references: [genre.genre_id],
     }),
-    mediaType: one(mediaType, {
-        fields: [track.mediaTypeId],
-        references: [mediaType.mediaTypeId],
+    media_type: one(media_type, {
+        fields: [track.media_type_id],
+        references: [media_type.media_type_id],
     }),
-    playlistTracks: many(playlistTrack),
+    playlist_tracks: many(playlist_track),
 }));
 
 export const genreRelations = relations(genre, ({ many }) => ({
     tracks: many(track),
 }));
 
-export const mediaTypeRelations = relations(mediaType, ({ many }) => ({
+export const media_typeRelations = relations(media_type, ({ many }) => ({
     tracks: many(track),
 }));
 
-export const playlistTrackRelations = relations(playlistTrack, ({ one }) => ({
+export const playlist_trackRelations = relations(playlist_track, ({ one }) => ({
     playlist: one(playlist, {
-        fields: [playlistTrack.playlistId],
-        references: [playlist.playlistId],
+        fields: [playlist_track.playlist_id],
+        references: [playlist.playlist_id],
     }),
     track: one(track, {
-        fields: [playlistTrack.trackId],
-        references: [track.trackId],
+        fields: [playlist_track.track_id],
+        references: [track.track_id],
     }),
 }));
 
 export const playlistRelations = relations(playlist, ({ many }) => ({
-    playlistTracks: many(playlistTrack),
+    playlist_tracks: many(playlist_track),
 }));

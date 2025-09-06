@@ -7,6 +7,10 @@ const pool = new Pool({
     connectionString: process.env.DB_URL,
 });
 
-const db = drizzle({ client: pool, schema: { ...schema, ...relations } });
+const db = drizzle({
+    client: pool,
+    schema: { ...schema, ...relations },
+    casing: 'snake_case',
+});
 
 export default db;
