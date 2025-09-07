@@ -1,6 +1,7 @@
 import type { PgTable } from 'drizzle-orm/pg-core';
 import { isArray, isObject, snakeCase, transform } from 'lodash';
 import type { CamelCase, SnakeCase } from 'type-fest';
+import z, { type ZodObject, type ZodSafeParseResult } from 'zod';
 import db from '@/db';
 
 export const getDynamicLimits = async (
@@ -13,13 +14,9 @@ export const getDynamicLimits = async (
     return { totalItems, totalPages };
 };
 
-export const getPageUrls = (
-    path: string,
-    currPage: number,
-): { prevPageUrl: string | null; nextPageUrl: string } => {
+export const getPageUrls = (path: string, currPage: number): { prevPageUrl: string | null; nextPageUrl: string } => {
     const prevPageNum = currPage - 1;
-    const prevPageUrl =
-        prevPageNum === 0 ? null : `${path}?page=${prevPageNum}`;
+    const prevPageUrl = prevPageNum === 0 ? null : `${path}?page=${prevPageNum}`;
 
     const nextPageNum = currPage + 1;
     const nextPageUrl = `${path}?page=${nextPageNum}`;
@@ -27,20 +24,38 @@ export const getPageUrls = (
     return { prevPageUrl, nextPageUrl };
 };
 
-export const toSnakeCase = <T extends CamelCase<object>>(
-    obj: T,
-): SnakeCase<T> =>
+export const toSnakeCase = <T extends CamelCase<object>>(obj: T): SnakeCase<T> =>
     transform(
         obj,
         (result, value, key) => {
             const newKey = typeof key === 'string' ? snakeCase(key) : key;
 
-            const transformedValue = isObject(value)
-                ? toSnakeCase(value as object)
-                : value;
+            const transformedValue = isObject(value) ? toSnakeCase(value as object) : value;
 
-            (result as Record<PropertyKey, unknown>)[newKey as PropertyKey] =
-                transformedValue;
+            (result as Record<PropertyKey, unknown>)[newKey as PropertyKey] = transformedValue;
         },
         isArray(obj) ? [] : {},
     ) as SnakeCase<T>;
+
+export const validateDynamicQueryParams = async <T extends ZodObject>(
+    query: z.infer<T>,
+    schema: T,
+    source: PgTable,
+): Promise<{
+    validatedQuery: ZodSafeParseResult<Record<string, unknown>>;
+    totalItems: number;
+    totalPages: number;
+}> => {
+    const { limit } = query;
+
+    const { totalItems, totalPages } = await getDynamicLimits(source, limit as number);
+
+    const dynamicQuerySchema = schema.extend({
+        limit: z.number().max(totalItems).optional().default(10),
+        page: z.number().max(totalPages).optional().default(1),
+    });
+
+    const validatedQuery = dynamicQuerySchema.safeParse(query);
+
+    return { validatedQuery, totalItems, totalPages };
+};
