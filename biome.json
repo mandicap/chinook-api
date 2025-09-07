@@ -12,7 +12,8 @@
         "enabled": true,
         "useEditorconfig": true,
         "indentStyle": "space",
-        "attributePosition": "auto"
+        "attributePosition": "auto",
+        "lineWidth": 120
     },
     "linter": {
         "enabled": true,
@@ -34,6 +35,11 @@
             "bracketSameLine": false,
             "quoteStyle": "single",
             "attributePosition": "auto"
+        }
+    },
+    "json": {
+        "formatter": {
+            "trailingCommas": "none"
         }
     },
     "assist": {

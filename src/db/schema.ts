@@ -1,14 +1,4 @@
-import { sql } from 'drizzle-orm';
-import {
-    foreignKey,
-    index,
-    integer,
-    numeric,
-    pgTable,
-    primaryKey,
-    timestamp,
-    varchar,
-} from 'drizzle-orm/pg-core';
+import { foreignKey, index, integer, numeric, pgTable, primaryKey, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 export const artist = pgTable('artist', {
     artist_id: integer().primaryKey().notNull(),
@@ -23,10 +13,7 @@ export const album = pgTable(
         artist_id: integer().notNull(),
     },
     (table) => [
-        index('album_artist_id_idx').using(
-            'btree',
-            table.artist_id.asc().nullsLast().op('int4_ops'),
-        ),
+        index('album_artist_id_idx').using('btree', table.artist_id.asc().nullsLast().op('int4_ops')),
         foreignKey({
             columns: [table.artist_id],
             foreignColumns: [artist.artist_id],
@@ -55,10 +42,7 @@ export const employee = pgTable(
         email: varchar({ length: 60 }),
     },
     (table) => [
-        index('employee_reports_to_idx').using(
-            'btree',
-            table.reports_to.asc().nullsLast().op('int4_ops'),
-        ),
+        index('employee_reports_to_idx').using('btree', table.reports_to.asc().nullsLast().op('int4_ops')),
         foreignKey({
             columns: [table.reports_to],
             foreignColumns: [table.employee_id],
@@ -85,10 +69,7 @@ export const customer = pgTable(
         support_rep_id: integer(),
     },
     (table) => [
-        index('customer_support_rep_id_idx').using(
-            'btree',
-            table.support_rep_id.asc().nullsLast().op('int4_ops'),
-        ),
+        index('customer_support_rep_id_idx').using('btree', table.support_rep_id.asc().nullsLast().op('int4_ops')),
         foreignKey({
             columns: [table.support_rep_id],
             foreignColumns: [employee.employee_id],
@@ -111,10 +92,7 @@ export const invoice = pgTable(
         total: numeric({ precision: 10, scale: 2 }).notNull(),
     },
     (table) => [
-        index('invoice_customer_id_idx').using(
-            'btree',
-            table.customer_id.asc().nullsLast().op('int4_ops'),
-        ),
+        index('invoice_customer_id_idx').using('btree', table.customer_id.asc().nullsLast().op('int4_ops')),
         foreignKey({
             columns: [table.customer_id],
             foreignColumns: [customer.customer_id],
@@ -133,14 +111,8 @@ export const invoice_line = pgTable(
         quantity: integer().notNull(),
     },
     (table) => [
-        index('invoice_line_invoice_id_idx').using(
-            'btree',
-            table.invoice_id.asc().nullsLast().op('int4_ops'),
-        ),
-        index('invoice_line_track_id_idx').using(
-            'btree',
-            table.track_id.asc().nullsLast().op('int4_ops'),
-        ),
+        index('invoice_line_invoice_id_idx').using('btree', table.invoice_id.asc().nullsLast().op('int4_ops')),
+        index('invoice_line_track_id_idx').using('btree', table.track_id.asc().nullsLast().op('int4_ops')),
         foreignKey({
             columns: [table.invoice_id],
             foreignColumns: [invoice.invoice_id],
@@ -168,18 +140,9 @@ export const track = pgTable(
         unit_price: numeric({ precision: 10, scale: 2 }).notNull(),
     },
     (table) => [
-        index('track_album_id_idx').using(
-            'btree',
-            table.album_id.asc().nullsLast().op('int4_ops'),
-        ),
-        index('track_genre_id_idx').using(
-            'btree',
-            table.genre_id.asc().nullsLast().op('int4_ops'),
-        ),
-        index('track_media_type_id_idx').using(
-            'btree',
-            table.media_type_id.asc().nullsLast().op('int4_ops'),
-        ),
+        index('track_album_id_idx').using('btree', table.album_id.asc().nullsLast().op('int4_ops')),
+        index('track_genre_id_idx').using('btree', table.genre_id.asc().nullsLast().op('int4_ops')),
+        index('track_media_type_id_idx').using('btree', table.media_type_id.asc().nullsLast().op('int4_ops')),
         foreignKey({
             columns: [table.album_id],
             foreignColumns: [album.album_id],
@@ -220,14 +183,8 @@ export const playlist_track = pgTable(
         track_id: integer().notNull(),
     },
     (table) => [
-        index('playlist_track_playlist_id_idx').using(
-            'btree',
-            table.playlist_id.asc().nullsLast().op('int4_ops'),
-        ),
-        index('playlist_track_track_id_idx').using(
-            'btree',
-            table.track_id.asc().nullsLast().op('int4_ops'),
-        ),
+        index('playlist_track_playlist_id_idx').using('btree', table.playlist_id.asc().nullsLast().op('int4_ops')),
+        index('playlist_track_track_id_idx').using('btree', table.track_id.asc().nullsLast().op('int4_ops')),
         foreignKey({
             columns: [table.playlist_id],
             foreignColumns: [playlist.playlist_id],

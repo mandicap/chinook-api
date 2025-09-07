@@ -1,20 +1,23 @@
 import { Hono } from 'hono';
+import snakeCasePropsMiddleware from '@/middleware/snakeCaseProps';
 import albums from '@/routes/albums';
 import artists from '@/routes/artists';
-import snakeCasePropsMiddleware from './middleware/snakeCaseProps';
 
-const app = new Hono();
+const api = new Hono();
 
-app.use(snakeCasePropsMiddleware);
+api.use(snakeCasePropsMiddleware);
 
-app.get('/health', (c) => {
-    return c.json({ status: 'ok', message: 'API is healthy' });
+api.get('/health', (c) => {
+    return c.json({
+        status: 'ok',
+        message: 'API is healthy',
+    });
 });
 
-app.route('/albums', albums);
-app.route('/artists', artists);
+api.route('/albums', albums);
+api.route('/artists', artists);
 
 export default {
     port: process.env.PORT || 3000,
-    fetch: app.fetch,
+    fetch: api.fetch,
 };
