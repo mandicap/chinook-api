@@ -8,20 +8,20 @@ import { querySchema } from '@/utils/schema';
 const tracks = new Hono();
 
 tracks.get('/', validator('query', querySchema), paginationMiddleware(track), async (c) => {
-    const {
-        page: currentPage,
-        limit: perPage,
-        offset,
-        totalItems,
-        totalPages,
-        prevPageUrl,
-        nextPageUrl,
-    } = c.get('pagination');
+    const { offset, ...pagination } = c.get('pagination');
 
     const tracks = await db.query.track.findMany({
         orderBy: (album, { asc }) => asc(album.album_id),
+        columns: {
+            album_id: false,
+            media_type_id: false,
+            genre_id: false,
+        },
         with: {
             album: {
+                columns: {
+                    artist_id: false,
+                },
                 with: {
                     artist: true,
                 },
@@ -29,20 +29,13 @@ tracks.get('/', validator('query', querySchema), paginationMiddleware(track), as
             genre: true,
             media_type: true,
         },
-        limit: perPage,
+        limit: pagination.perPage,
         offset,
     });
 
     return c.json({
         data: tracks,
-        pagination: {
-            currentPage,
-            perPage,
-            totalPages,
-            totalItems,
-            nextPageUrl,
-            prevPageUrl,
-        },
+        pagination,
     });
 });
 

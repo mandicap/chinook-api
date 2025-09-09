@@ -17,8 +17,8 @@ type QuerySchema<T extends ZodType> = {
 };
 
 type PaginationVariables = {
-    page: number;
-    limit: number;
+    currentPage: number;
+    perPage: number;
     offset: number;
     totalItems: number;
     totalPages: number;
@@ -38,24 +38,24 @@ const paginationMiddleware = (table: PgTable) => {
             const totalItems = await db.$count(table);
 
             const validated = c.req.valid('query');
-            const page = validated.page || 1;
-            const limit = validated.limit || Math.min(totalItems, 10);
+            const currentPage = validated.page || 1;
+            const perPage = validated.limit || Math.min(totalItems, 10);
 
-            const offset = (page - 1) * limit;
+            const offset = (currentPage - 1) * perPage;
 
-            const totalPages = Math.ceil(totalItems / limit);
+            const totalPages = Math.ceil(totalItems / perPage);
 
-            if (page > totalPages) {
+            if (currentPage > totalPages) {
                 return c.json({ error: `Page cannot exceed ${totalPages}.` }, 400);
             }
 
-            if (limit > totalItems) {
+            if (perPage > totalItems) {
                 return c.json({ error: `Limit cannot exceed ${totalItems}.` }, 400);
             }
 
-            const { prevPageUrl, nextPageUrl } = getPageUrls(c.req.path, page, totalPages);
+            const { prevPageUrl, nextPageUrl } = getPageUrls(c.req.path, currentPage, totalPages);
 
-            c.set('pagination', { page, limit, offset, totalItems, totalPages, prevPageUrl, nextPageUrl });
+            c.set('pagination', { currentPage, perPage, offset, totalItems, totalPages, prevPageUrl, nextPageUrl });
 
             await next();
         },

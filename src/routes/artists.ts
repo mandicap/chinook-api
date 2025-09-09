@@ -8,31 +8,16 @@ import { querySchema } from '@/utils/schema';
 const artists = new Hono();
 
 artists.get('/', validator('query', querySchema), paginationMiddleware(artist), async (c) => {
-    const {
-        page: currentPage,
-        limit: perPage,
-        offset,
-        totalItems,
-        totalPages,
-        prevPageUrl,
-        nextPageUrl,
-    } = c.get('pagination');
+    const { offset, ...pagination } = c.get('pagination');
 
     const artists = await db.query.artist.findMany({
-        limit: perPage,
+        limit: pagination.perPage,
         offset,
     });
 
     return c.json({
         data: artists,
-        pagination: {
-            currentPage,
-            perPage,
-            totalPages,
-            totalItems,
-            nextPageUrl,
-            prevPageUrl,
-        },
+        pagination,
     });
 });
 

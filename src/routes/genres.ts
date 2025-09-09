@@ -8,31 +8,16 @@ import { querySchema } from '@/utils/schema';
 const genres = new Hono();
 
 genres.get('/', validator('query', querySchema), paginationMiddleware(genre), async (c) => {
-    const {
-        page: currentPage,
-        limit: perPage,
-        offset,
-        totalItems,
-        totalPages,
-        prevPageUrl,
-        nextPageUrl,
-    } = c.get('pagination');
+    const { offset, ...pagination } = c.get('pagination');
 
     const genres = await db.query.genre.findMany({
-        limit: perPage,
+        limit: pagination.perPage,
         offset,
     });
 
     return c.json({
         data: genres,
-        pagination: {
-            currentPage,
-            perPage,
-            totalPages,
-            totalItems,
-            nextPageUrl,
-            prevPageUrl,
-        },
+        pagination,
     });
 });
 
