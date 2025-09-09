@@ -1,13 +1,13 @@
 import { Hono } from 'hono';
 import { validator } from 'hono-openapi';
 import db from '@/db';
-import { artist } from '@/db/schema';
+import { media_type } from '@/db/schema';
 import paginationMiddleware from '@/middleware/pagination';
 import { querySchema } from '@/utils/schema';
 
-const artists = new Hono();
+const mediaTypes = new Hono();
 
-artists.get('/', validator('query', querySchema), paginationMiddleware(artist), async (c) => {
+mediaTypes.get('/', validator('query', querySchema), paginationMiddleware(media_type), async (c) => {
     const {
         page: currentPage,
         limit: perPage,
@@ -18,13 +18,13 @@ artists.get('/', validator('query', querySchema), paginationMiddleware(artist), 
         nextPageUrl,
     } = c.get('pagination');
 
-    const artists = await db.query.artist.findMany({
+    const mediaTypes = await db.query.media_type.findMany({
         limit: perPage,
         offset,
     });
 
     return c.json({
-        data: artists,
+        data: mediaTypes,
         pagination: {
             currentPage,
             perPage,
@@ -36,4 +36,4 @@ artists.get('/', validator('query', querySchema), paginationMiddleware(artist), 
     });
 });
 
-export default artists;
+export default mediaTypes;
