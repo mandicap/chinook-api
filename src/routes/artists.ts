@@ -1,9 +1,10 @@
+import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { validator } from 'hono-openapi';
 import db from '@/db';
 import { artist } from '@/db/schema';
 import paginationMiddleware from '@/middleware/pagination';
-import { querySchema } from '@/utils/schema';
+import { paramSchema, querySchema } from '@/utils/schema';
 
 const artists = new Hono();
 
@@ -19,6 +20,16 @@ artists.get('/', validator('query', querySchema), paginationMiddleware(artist), 
         data: artists,
         pagination,
     });
+});
+
+artists.get('/:id', validator('param', paramSchema), async (c) => {
+    const { id } = c.req.valid('param');
+
+    const data = await db.query.artist.findFirst({
+        where: eq(artist.artist_id, id),
+    });
+
+    return c.json({ data });
 });
 
 export default artists;
