@@ -1,7 +1,7 @@
 import { createSelectSchema } from 'drizzle-zod';
 import z from 'zod';
 import { album, artist, genre, media_type, playlist, track } from '@/db/schema';
-import { snakeCaseSchema } from '../helpers';
+import { snakeCaseSchema } from '@/utils/helpers';
 
 export const querySchema = z.object({
     limit: z.coerce.number().optional(),

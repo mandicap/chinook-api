@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { openAPIRouteHandler } from 'hono-openapi';
-import api from './api';
+import api from '@/api';
 
 const port = process.env.PORT || 3000;
 
