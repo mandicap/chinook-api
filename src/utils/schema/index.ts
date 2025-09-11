@@ -33,4 +33,8 @@ export const genreSchema = createSelectSchema(genre);
 export const mediaTypeSchema = createSelectSchema(media_type);
 export const playlistSchema = createSelectSchema(playlist);
 
-export const trackSchema = createSelectSchema(track);
+export const trackSchema = createSelectSchema(track).extend({
+    album: albumSchema,
+    genre: genreSchema,
+    media_type: mediaTypeSchema,
+});

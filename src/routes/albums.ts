@@ -10,7 +10,7 @@ import { albumSchema, paginationSchema, paramSchema, querySchema } from '@/utils
 const albums = new Hono();
 
 const paginatedResponseSchema = z.object({
-    data: albumSchema,
+    data: z.array(albumSchema),
     pagination: paginationSchema,
 });
 
@@ -18,7 +18,7 @@ const getAlbums: DescribeRouteOptions = {
     operationId: 'getAlbums',
     responses: {
         200: {
-            description: 'Successful rseponse',
+            description: 'Successful response',
             content: {
                 'application/json': {
                     schema: resolver(paginatedResponseSchema),

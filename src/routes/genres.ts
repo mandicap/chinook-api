@@ -1,50 +1,69 @@
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
-import { describeRoute, validator } from 'hono-openapi';
+import { type DescribeRouteOptions, describeRoute, resolver, validator } from 'hono-openapi';
+import z from 'zod';
 import db from '@/db';
 import { genre } from '@/db/schema';
 import paginationMiddleware from '@/middleware/paginationMiddleware';
-import { paramSchema, querySchema } from '@/utils/schema';
+import { genreSchema, paginationSchema, paramSchema, querySchema } from '@/utils/schema';
 
 const genres = new Hono();
 
-genres.get(
-    '/',
-    describeRoute({
-        operationId: 'getGenres',
-    }),
-    validator('query', querySchema),
-    paginationMiddleware(genre),
-    async (c) => {
-        const { offset, ...pagination } = c.get('pagination');
+const paginatedResponseSchema = z.object({
+    data: z.array(genreSchema),
+    pagination: paginationSchema,
+});
 
-        const genres = await db.query.genre.findMany({
-            limit: pagination.perPage,
-            offset,
-        });
-
-        return c.json({
-            data: genres,
-            pagination,
-        });
+const getGenres: DescribeRouteOptions = {
+    operationId: 'getGenres',
+    responses: {
+        200: {
+            description: 'Successful response',
+            content: {
+                'application/json': {
+                    schema: resolver(paginatedResponseSchema),
+                },
+            },
+        },
     },
-);
+};
 
-genres.get(
-    '/:id',
-    describeRoute({
-        operationId: 'getGenreByID',
-    }),
-    validator('param', paramSchema),
-    async (c) => {
-        const { id } = c.req.valid('param');
+genres.get('/', describeRoute(getGenres), validator('query', querySchema), paginationMiddleware(genre), async (c) => {
+    const { offset, ...pagination } = c.get('pagination');
 
-        const data = await db.query.genre.findFirst({
-            where: eq(genre.genre_id, id),
-        });
+    const genres = await db.query.genre.findMany({
+        limit: pagination.perPage,
+        offset,
+    });
 
-        return c.json({ data });
+    return c.json({
+        data: genres,
+        pagination,
+    });
+});
+
+const getGenreByID: DescribeRouteOptions = {
+    operationId: 'getGenreByID',
+    responses: {
+        200: {
+            description: 'Successful response',
+            content: {
+                'application/json': {
+                    schema: resolver(genreSchema),
+                },
+            },
+        },
     },
-);
+};
+
+genres.get('/:id', describeRoute(getGenreByID), validator('param', paramSchema), async (c) => {
+    const { id } = c.req.valid('param');
+
+    const data = await db.query.genre.findFirst({
+        where: eq(genre.genre_id, id),
+    });
+
+    return c.json({ data });
+});
 
 export default genres;
