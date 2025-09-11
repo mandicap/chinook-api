@@ -2,7 +2,8 @@ import isArray from 'lodash-es/isArray';
 import isObject from 'lodash-es/isObject';
 import snakeCase from 'lodash-es/snakeCase';
 import transform from 'lodash-es/transform';
-import type { CamelCase, SnakeCase } from 'type-fest';
+import type { CamelCasedPropertiesDeep, SnakeCase } from 'type-fest';
+import { type ZodObject, type ZodRawShape, z } from 'zod';
 
 export const getPageUrls = (
     path: string,
@@ -18,15 +19,33 @@ export const getPageUrls = (
     return { prevPageUrl, nextPageUrl };
 };
 
-export const toSnakeCase = <T extends CamelCase<object>>(obj: T): SnakeCase<T> =>
-    transform(
+export const snakeCaseKeys = <T extends CamelCasedPropertiesDeep<object>>(obj: T): SnakeCase<T> => {
+    return transform(
         obj,
         (result, value, key) => {
             const newKey = typeof key === 'string' ? snakeCase(key) : key;
 
-            const transformedValue = isObject(value) ? toSnakeCase(value as object) : value;
+            const transformedValue = isObject(value) ? snakeCaseKeys(value as object) : value;
 
             (result as Record<PropertyKey, unknown>)[newKey as PropertyKey] = transformedValue;
         },
         isArray(obj) ? [] : {},
     ) as SnakeCase<T>;
+};
+
+export const snakeCaseSchema = <T extends ZodObject<ZodRawShape>>(
+    schema: T,
+): ZodObject<Record<string, z.ZodTypeAny>> => {
+    const shape = schema.shape;
+
+    const snakeCasedShape = Object.keys(shape).reduce(
+        (acc, key) => {
+            const snakeKey = snakeCase(key);
+            acc[snakeKey] = shape[key] as z.ZodTypeAny;
+            return acc;
+        },
+        {} as Record<string, z.ZodTypeAny>,
+    );
+
+    return z.object(snakeCasedShape);
+};

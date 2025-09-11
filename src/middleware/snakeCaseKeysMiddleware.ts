@@ -1,14 +1,14 @@
 import { createMiddleware } from 'hono/factory';
 import type { Bindings } from 'hono/types';
-import { toSnakeCase } from '@/utils/helpers';
+import { snakeCaseKeys } from '@/utils/helpers';
 
-const snakeCasePropsMiddleware = createMiddleware<{ Bindings: Bindings }>(async (c, next) => {
+const snakeCaseKeysMiddleware = createMiddleware<{ Bindings: Bindings }>(async (c, next) => {
     await next();
 
     if (c.res.headers.get('Content-Type')?.includes('application/json')) {
         try {
             const originalResponse = await c.res.json();
-            const remappedResponse = toSnakeCase(originalResponse);
+            const remappedResponse = snakeCaseKeys(originalResponse);
             c.res = new Response(JSON.stringify(remappedResponse), c.res);
         } catch (e) {
             console.error('Failed to remap JSON to snake case:', e);
@@ -16,4 +16,4 @@ const snakeCasePropsMiddleware = createMiddleware<{ Bindings: Bindings }>(async 
     }
 });
 
-export default snakeCasePropsMiddleware;
+export default snakeCaseKeysMiddleware;

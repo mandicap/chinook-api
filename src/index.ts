@@ -1,24 +1,40 @@
 import { Hono } from 'hono';
-import snakeCasePropsMiddleware from '@/middleware/snakeCaseProps';
-import albums from '@/routes/albums';
-import artists from '@/routes/artists';
-import genres from '@/routes/genres';
-import mediaTypes from '@/routes/mediaTypes';
-import playlists from '@/routes/playlists';
-import tracks from '@/routes/tracks';
+import { openAPIRouteHandler } from 'hono-openapi';
+import api from './api';
 
-const api = new Hono().basePath('/api');
+const port = process.env.PORT || 3000;
 
-api.use(snakeCasePropsMiddleware);
+const app = new Hono();
 
-api.route('/albums', albums);
-api.route('/artists', artists);
-api.route('/genres', genres);
-api.route('/media-types', mediaTypes);
-api.route('/playlists', playlists);
-api.route('/tracks', tracks);
+app.get('/health', async (c) =>
+    c.json({
+        status: 'ok',
+        message: 'API healthy',
+    }),
+);
+
+app.route('/', api);
+
+app.get(
+    '/openapi.json',
+    openAPIRouteHandler(api, {
+        documentation: {
+            info: {
+                title: 'Chinook',
+                version: '1.0.0',
+                description: 'An API for Chinook sample database.',
+            },
+            servers: [
+                {
+                    url: `http://localhost:${port}`,
+                    description: 'Local Server',
+                },
+            ],
+        },
+    }),
+);
 
 export default {
-    port: process.env.PORT || 3000,
-    fetch: api.fetch,
+    port,
+    fetch: app.fetch,
 };
