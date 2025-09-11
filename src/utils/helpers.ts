@@ -38,11 +38,11 @@ export const snakeCaseSchema = <T extends ZodObject<ZodRawShape>>(
 ): ZodObject<Record<string, z.ZodTypeAny>> => {
     const shape = schema.shape;
 
-    const snakeCasedShape = Object.keys(shape).reduce(
-        (acc, key) => {
+    const snakeCasedShape = transform(
+        shape,
+        (result, value, key) => {
             const snakeKey = snakeCase(key);
-            acc[snakeKey] = shape[key] as z.ZodTypeAny;
-            return acc;
+            result[snakeKey] = value as z.ZodTypeAny;
         },
         {} as Record<string, z.ZodTypeAny>,
     );
