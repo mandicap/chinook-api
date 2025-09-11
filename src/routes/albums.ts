@@ -5,19 +5,9 @@ import z from 'zod';
 import db from '@/db';
 import { album } from '@/db/schema';
 import paginationMiddleware from '@/middleware/paginationMiddleware';
-import {
-    artistSchema,
-    albumSchema as baseAlbumSchema,
-    paginationSchema,
-    paramSchema,
-    querySchema,
-} from '@/utils/schema';
+import { albumSchema, paginationSchema, paramSchema, querySchema } from '@/utils/schema';
 
 const albums = new Hono();
-
-const albumSchema = baseAlbumSchema.extend({
-    artist: artistSchema,
-});
 
 const paginatedResponseSchema = z.object({
     data: albumSchema,

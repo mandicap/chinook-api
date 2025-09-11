@@ -23,9 +23,14 @@ export const paginationSchema = snakeCaseSchema(
     }),
 );
 
-export const albumSchema = createSelectSchema(album);
 export const artistSchema = createSelectSchema(artist);
+
+export const albumSchema = createSelectSchema(album).extend({
+    artist: artistSchema,
+});
+
 export const genreSchema = createSelectSchema(genre);
 export const mediaTypeSchema = createSelectSchema(media_type);
 export const playlistSchema = createSelectSchema(playlist);
+
 export const trackSchema = createSelectSchema(track);
