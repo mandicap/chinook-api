@@ -1,10 +1,29 @@
-import { Hono } from 'hono';
+import { type Context, Hono } from 'hono';
+import { cors } from 'hono/cors';
 import { openAPIRouteHandler } from 'hono-openapi';
 import api from '@/api';
+import { auth } from '@/utils/auth';
 
 const port = process.env.APP_PORT || 3000;
 
 const app = new Hono();
+
+app.use('*', async (c: Context, next) => {
+    const corsMiddlewareHandler = cors({
+        origin: c.env.CORS_ORIGINS || [],
+        allowHeaders: ['Content-Type', 'Authorization'],
+        allowMethods: ['POST', 'GET', 'OPTIONS'],
+        exposeHeaders: ['Content-Length'],
+        maxAge: 600,
+        credentials: true,
+    });
+
+    return await corsMiddlewareHandler(c, next);
+});
+
+app.on(['POST', 'GET'], '/api/auth/*', (c) => {
+    return auth.handler(c.req.raw);
+});
 
 app.get('/health', async (c) =>
     c.json({
@@ -12,8 +31,6 @@ app.get('/health', async (c) =>
         message: 'API healthy',
     }),
 );
-
-app.route('/', api);
 
 app.get(
     '/openapi.json',
@@ -33,6 +50,8 @@ app.get(
         },
     }),
 );
+
+app.route('/', api);
 
 export default {
     port,
