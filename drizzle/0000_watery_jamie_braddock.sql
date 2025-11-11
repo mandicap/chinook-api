@@ -1,113 +1,111 @@
 -- Current sql file was generated after introspecting the database
 -- If you want to run this migration please uncomment this code before executing migrations
-/*
-CREATE TABLE "invoices" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"customer_id" integer NOT NULL,
-	"invoice_date" timestamp NOT NULL,
-	"billing_address" varchar(255),
-	"billing_city" varchar(255),
-	"billing_state" varchar(255),
-	"billing_country" varchar(255),
-	"billing_postal_code" varchar(255),
-	"total" numeric(10, 2) NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "invoice_lines" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"invoice_id" integer NOT NULL,
-	"track_id" integer NOT NULL,
-	"unit_price" numeric(10, 2) NOT NULL,
-	"quantity" integer NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "tracks" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" varchar(200) NOT NULL,
-	"album_id" integer,
-	"media_type_id" integer NOT NULL,
-	"genre_id" integer,
-	"composer" varchar(220),
-	"milliseconds" integer NOT NULL,
-	"bytes" integer,
-	"unit_price" numeric(10, 2) NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "artists" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" varchar(255) NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "albums" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"title" varchar(255) NOT NULL,
-	"artist_id" integer NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "employees" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"first_name" varchar(255) NOT NULL,
-	"last_name" varchar(255) NOT NULL,
-	"title" varchar(255),
-	"reports_to" integer,
-	"birth_date" timestamp,
-	"hire_date" timestamp,
-	"address" varchar(255),
-	"city" varchar(255),
-	"state" varchar(255),
-	"country" varchar(255),
-	"postal_code" varchar(255),
-	"phone" varchar(255),
-	"fax" varchar(255),
-	"email" varchar(255)
-);
---> statement-breakpoint
-CREATE TABLE "customers" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"first_name" varchar(255) NOT NULL,
-	"last_name" varchar(255) NOT NULL,
-	"company" varchar(255),
-	"address" varchar(255),
-	"city" varchar(255),
-	"state" varchar(255),
-	"country" varchar(255),
-	"postal_code" varchar(255),
-	"phone" varchar(255),
-	"fax" varchar(255),
-	"email" varchar(255) NOT NULL,
-	"support_rep_id" integer
-);
---> statement-breakpoint
-CREATE TABLE "playlists" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" varchar(255) NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "genres" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" varchar(255) NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "media_types" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" varchar(255) NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "playlist_tracks" (
-	"playlist_id" integer NOT NULL,
-	"track_id" integer NOT NULL,
-	CONSTRAINT "playlist_tracks_pkey" PRIMARY KEY("playlist_id","track_id")
-);
---> statement-breakpoint
-ALTER TABLE "invoices" ADD CONSTRAINT "invoice_customer_id_fkey" FOREIGN KEY ("customer_id") REFERENCES "public"."customers"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "invoice_lines" ADD CONSTRAINT "invoice_line_invoice_id_fkey" FOREIGN KEY ("invoice_id") REFERENCES "public"."invoices"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "invoice_lines" ADD CONSTRAINT "invoice_line_track_id_fkey" FOREIGN KEY ("track_id") REFERENCES "public"."tracks"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "tracks" ADD CONSTRAINT "track_album_id_fkey" FOREIGN KEY ("album_id") REFERENCES "public"."albums"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "tracks" ADD CONSTRAINT "track_genre_id_fkey" FOREIGN KEY ("genre_id") REFERENCES "public"."genres"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "tracks" ADD CONSTRAINT "track_media_type_id_fkey" FOREIGN KEY ("media_type_id") REFERENCES "public"."media_types"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "albums" ADD CONSTRAINT "album_artist_id_fkey" FOREIGN KEY ("artist_id") REFERENCES "public"."artists"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "employees" ADD CONSTRAINT "employee_reports_to_fkey" FOREIGN KEY ("reports_to") REFERENCES "public"."employees"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "customers" ADD CONSTRAINT "customer_support_rep_id_fkey" FOREIGN KEY ("support_rep_id") REFERENCES "public"."employees"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "playlist_tracks" ADD CONSTRAINT "playlist_track_playlist_id_fkey" FOREIGN KEY ("playlist_id") REFERENCES "public"."playlists"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "playlist_tracks" ADD CONSTRAINT "playlist_track_track_id_fkey" FOREIGN KEY ("track_id") REFERENCES "public"."tracks"("id") ON DELETE no action ON UPDATE no action;
-*/
+-- CREATE TABLE "invoices" (
+-- 	"id" serial PRIMARY KEY NOT NULL,
+-- 	"customer_id" integer NOT NULL,
+-- 	"invoice_date" timestamp NOT NULL,
+-- 	"billing_address" varchar(255),
+-- 	"billing_city" varchar(255),
+-- 	"billing_state" varchar(255),
+-- 	"billing_country" varchar(255),
+-- 	"billing_postal_code" varchar(255),
+-- 	"total" numeric(10, 2) NOT NULL
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "invoice_lines" (
+-- 	"id" serial PRIMARY KEY NOT NULL,
+-- 	"invoice_id" integer NOT NULL,
+-- 	"track_id" integer NOT NULL,
+-- 	"unit_price" numeric(10, 2) NOT NULL,
+-- 	"quantity" integer NOT NULL
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "tracks" (
+-- 	"id" serial PRIMARY KEY NOT NULL,
+-- 	"name" varchar(200) NOT NULL,
+-- 	"album_id" integer,
+-- 	"media_type_id" integer NOT NULL,
+-- 	"genre_id" integer,
+-- 	"composer" varchar(220),
+-- 	"milliseconds" integer NOT NULL,
+-- 	"bytes" integer,
+-- 	"unit_price" numeric(10, 2) NOT NULL
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "artists" (
+-- 	"id" serial PRIMARY KEY NOT NULL,
+-- 	"name" varchar(255) NOT NULL
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "albums" (
+-- 	"id" serial PRIMARY KEY NOT NULL,
+-- 	"title" varchar(255) NOT NULL,
+-- 	"artist_id" integer NOT NULL
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "employees" (
+-- 	"id" serial PRIMARY KEY NOT NULL,
+-- 	"first_name" varchar(255) NOT NULL,
+-- 	"last_name" varchar(255) NOT NULL,
+-- 	"title" varchar(255),
+-- 	"reports_to" integer,
+-- 	"birth_date" timestamp,
+-- 	"hire_date" timestamp,
+-- 	"address" varchar(255),
+-- 	"city" varchar(255),
+-- 	"state" varchar(255),
+-- 	"country" varchar(255),
+-- 	"postal_code" varchar(255),
+-- 	"phone" varchar(255),
+-- 	"fax" varchar(255),
+-- 	"email" varchar(255)
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "customers" (
+-- 	"id" serial PRIMARY KEY NOT NULL,
+-- 	"first_name" varchar(255) NOT NULL,
+-- 	"last_name" varchar(255) NOT NULL,
+-- 	"company" varchar(255),
+-- 	"address" varchar(255),
+-- 	"city" varchar(255),
+-- 	"state" varchar(255),
+-- 	"country" varchar(255),
+-- 	"postal_code" varchar(255),
+-- 	"phone" varchar(255),
+-- 	"fax" varchar(255),
+-- 	"email" varchar(255) NOT NULL,
+-- 	"support_rep_id" integer
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "playlists" (
+-- 	"id" serial PRIMARY KEY NOT NULL,
+-- 	"name" varchar(255) NOT NULL
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "genres" (
+-- 	"id" serial PRIMARY KEY NOT NULL,
+-- 	"name" varchar(255) NOT NULL
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "media_types" (
+-- 	"id" serial PRIMARY KEY NOT NULL,
+-- 	"name" varchar(255) NOT NULL
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "playlist_tracks" (
+-- 	"playlist_id" integer NOT NULL,
+-- 	"track_id" integer NOT NULL,
+-- 	CONSTRAINT "playlist_tracks_pkey" PRIMARY KEY("playlist_id","track_id")
+-- );
+-- --> statement-breakpoint
+-- ALTER TABLE "invoices" ADD CONSTRAINT "invoice_customer_id_fkey" FOREIGN KEY ("customer_id") REFERENCES "public"."customers"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "invoice_lines" ADD CONSTRAINT "invoice_line_invoice_id_fkey" FOREIGN KEY ("invoice_id") REFERENCES "public"."invoices"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "invoice_lines" ADD CONSTRAINT "invoice_line_track_id_fkey" FOREIGN KEY ("track_id") REFERENCES "public"."tracks"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "tracks" ADD CONSTRAINT "track_album_id_fkey" FOREIGN KEY ("album_id") REFERENCES "public"."albums"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "tracks" ADD CONSTRAINT "track_genre_id_fkey" FOREIGN KEY ("genre_id") REFERENCES "public"."genres"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "tracks" ADD CONSTRAINT "track_media_type_id_fkey" FOREIGN KEY ("media_type_id") REFERENCES "public"."media_types"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "albums" ADD CONSTRAINT "album_artist_id_fkey" FOREIGN KEY ("artist_id") REFERENCES "public"."artists"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "employees" ADD CONSTRAINT "employee_reports_to_fkey" FOREIGN KEY ("reports_to") REFERENCES "public"."employees"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "customers" ADD CONSTRAINT "customer_support_rep_id_fkey" FOREIGN KEY ("support_rep_id") REFERENCES "public"."employees"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "playlist_tracks" ADD CONSTRAINT "playlist_track_playlist_id_fkey" FOREIGN KEY ("playlist_id") REFERENCES "public"."playlists"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "playlist_tracks" ADD CONSTRAINT "playlist_track_track_id_fkey" FOREIGN KEY ("track_id") REFERENCES "public"."tracks"("id") ON DELETE no action ON UPDATE no action;
