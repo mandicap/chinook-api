@@ -1,6 +1,6 @@
 import { createSelectSchema } from 'drizzle-zod';
 import z from 'zod';
-import { album, artist, genre, media_type, playlist, track } from '@/db/schema';
+import { albums, artists, genres, media_types, playlists, tracks } from '@/db/schema';
 import { snakeCaseSchema } from '@/utils/helpers';
 
 export const querySchema = z.object({
@@ -23,17 +23,17 @@ export const paginationSchema = snakeCaseSchema(
     }),
 );
 
-export const artistSchema = createSelectSchema(artist);
+export const artistSchema = createSelectSchema(artists);
 
-export const albumSchema = createSelectSchema(album).extend({
+export const albumSchema = createSelectSchema(albums).extend({
     artist: artistSchema,
 });
 
-export const genreSchema = createSelectSchema(genre);
-export const mediaTypeSchema = createSelectSchema(media_type);
-export const playlistSchema = createSelectSchema(playlist);
+export const genreSchema = createSelectSchema(genres);
+export const mediaTypeSchema = createSelectSchema(media_types);
+export const playlistSchema = createSelectSchema(playlists);
 
-export const trackSchema = createSelectSchema(track).extend({
+export const trackSchema = createSelectSchema(tracks).extend({
     album: albumSchema,
     genre: genreSchema,
     media_type: mediaTypeSchema,

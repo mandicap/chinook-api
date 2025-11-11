@@ -1,0 +1,27 @@
+name: chinook
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    ports:
+      - "${APP_PORT:-3000}:${APP_PORT:-3000}"
+    env_file:
+      - .env
+    environment:
+      - APP_PORT=${APP_PORT:-3000}
+      - DB_URL=${DB_URL}
+    depends_on:
+      - db
+
+  db:
+    image: builtnoble/chinook-postgres
+    ports:
+      - "${DB_PORT:-5432}:${DB_PORT:-5432}"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_DB=${DB_NAME:-chinook}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}

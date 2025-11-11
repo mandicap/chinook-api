@@ -3,11 +3,11 @@ import { Hono } from 'hono';
 import { type DescribeRouteOptions, describeRoute, resolver, validator } from 'hono-openapi';
 import z from 'zod';
 import db from '@/db';
-import { playlist } from '@/db/schema';
+import { playlists } from '@/db/schema';
 import paginationMiddleware from '@/middleware/paginationMiddleware';
 import { paginationSchema, paramSchema, playlistSchema, querySchema } from '@/utils/schema';
 
-const playlists = new Hono();
+const playlistRoutes = new Hono();
 
 const paginatedResponseSchema = z.object({
     data: z.array(playlistSchema),
@@ -28,15 +28,15 @@ const getPlaylists: DescribeRouteOptions = {
     },
 };
 
-playlists.get(
+playlistRoutes.get(
     '/',
     describeRoute(getPlaylists),
     validator('query', querySchema),
-    paginationMiddleware(playlist),
+    paginationMiddleware(playlists),
     async (c) => {
         const { offset, ...pagination } = c.get('pagination');
 
-        const playlists = await db.query.playlist.findMany({
+        const playlists = await db.query.playlists.findMany({
             limit: pagination.perPage,
             offset,
         });
@@ -62,14 +62,14 @@ const getPlaylistByID: DescribeRouteOptions = {
     },
 };
 
-playlists.get('/:id', describeRoute(getPlaylistByID), validator('param', paramSchema), async (c) => {
+playlistRoutes.get('/:id', describeRoute(getPlaylistByID), validator('param', paramSchema), async (c) => {
     const { id } = c.req.valid('param');
 
-    const data = await db.query.playlist.findFirst({
-        where: eq(playlist.playlist_id, id),
+    const data = await db.query.playlists.findFirst({
+        where: eq(playlists.id, id),
     });
 
     return c.json({ data });
 });
 
-export default playlists;
+export default playlistRoutes;

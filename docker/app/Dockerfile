@@ -15,8 +15,8 @@ ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=build /app/bun-chinook-api .
 
-ARG BUILD_API_PORT=3000
-ENV API_PORT=${BUILD_API_PORT}
-EXPOSE ${API_PORT}
+ARG APP_PORT=3000
+ENV APP_PORT=${APP_PORT}
+EXPOSE ${APP_PORT}
 
 ENTRYPOINT ["./bun-chinook-api"]

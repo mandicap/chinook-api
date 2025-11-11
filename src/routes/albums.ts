@@ -3,11 +3,11 @@ import { Hono } from 'hono';
 import { type DescribeRouteOptions, describeRoute, resolver, validator } from 'hono-openapi';
 import z from 'zod';
 import db from '@/db';
-import { album } from '@/db/schema';
+import { albums } from '@/db/schema';
 import paginationMiddleware from '@/middleware/paginationMiddleware';
 import { albumSchema, paginationSchema, paramSchema, querySchema } from '@/utils/schema';
 
-const albums = new Hono();
+const albumRoutes = new Hono();
 
 const paginatedResponseSchema = z.object({
     data: z.array(albumSchema),
@@ -28,22 +28,28 @@ const getAlbums: DescribeRouteOptions = {
     },
 };
 
-albums.get('/', describeRoute(getAlbums), validator('query', querySchema), paginationMiddleware(album), async (c) => {
-    const { offset, ...pagination } = c.get('pagination');
+albumRoutes.get(
+    '/',
+    describeRoute(getAlbums),
+    validator('query', querySchema),
+    paginationMiddleware(albums),
+    async (c) => {
+        const { offset, ...pagination } = c.get('pagination');
 
-    const albums = await db.query.album.findMany({
-        with: {
-            artist: true,
-        },
-        limit: pagination.perPage,
-        offset,
-    });
+        const albums = await db.query.albums.findMany({
+            with: {
+                artist: true,
+            },
+            limit: pagination.perPage,
+            offset,
+        });
 
-    return c.json({
-        data: albums,
-        pagination,
-    });
-});
+        return c.json({
+            data: albums,
+            pagination,
+        });
+    },
+);
 
 const getAlbumByID: DescribeRouteOptions = {
     operationId: 'getAlbumByID',
@@ -59,11 +65,11 @@ const getAlbumByID: DescribeRouteOptions = {
     },
 };
 
-albums.get('/:id', describeRoute(getAlbumByID), validator('param', paramSchema), async (c) => {
+albumRoutes.get('/:id', describeRoute(getAlbumByID), validator('param', paramSchema), async (c) => {
     const { id } = c.req.valid('param');
 
-    const data = await db.query.album.findFirst({
-        where: eq(album.album_id, id),
+    const data = await db.query.albums.findFirst({
+        where: eq(albums.id, id),
         with: {
             artist: true,
         },
@@ -72,4 +78,4 @@ albums.get('/:id', describeRoute(getAlbumByID), validator('param', paramSchema),
     return c.json({ data });
 });
 
-export default albums;
+export default albumRoutes;

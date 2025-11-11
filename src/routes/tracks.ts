@@ -3,11 +3,11 @@ import { Hono } from 'hono';
 import { type DescribeRouteOptions, describeRoute, resolver, validator } from 'hono-openapi';
 import z from 'zod';
 import db from '@/db';
-import { track } from '@/db/schema';
+import { tracks } from '@/db/schema';
 import paginationMiddleware from '@/middleware/paginationMiddleware';
 import { paginationSchema, paramSchema, querySchema, trackSchema } from '@/utils/schema';
 
-const tracks = new Hono();
+const trackRoutes = new Hono();
 
 const paginatedResponseSchema = z.object({
     data: z.array(trackSchema),
@@ -28,29 +28,35 @@ const getTracks: DescribeRouteOptions = {
     },
 };
 
-tracks.get('/', describeRoute(getTracks), validator('query', querySchema), paginationMiddleware(track), async (c) => {
-    const { offset, ...pagination } = c.get('pagination');
+trackRoutes.get(
+    '/',
+    describeRoute(getTracks),
+    validator('query', querySchema),
+    paginationMiddleware(tracks),
+    async (c) => {
+        const { offset, ...pagination } = c.get('pagination');
 
-    const tracks = await db.query.track.findMany({
-        orderBy: (album, { asc }) => asc(album.album_id),
-        with: {
-            album: {
-                with: {
-                    artist: true,
+        const tracks = await db.query.tracks.findMany({
+            orderBy: (albums, { asc }) => asc(albums.id),
+            with: {
+                album: {
+                    with: {
+                        artist: true,
+                    },
                 },
+                genre: true,
+                media_type: true,
             },
-            genre: true,
-            media_type: true,
-        },
-        limit: pagination.perPage,
-        offset,
-    });
+            limit: pagination.perPage,
+            offset,
+        });
 
-    return c.json({
-        data: tracks,
-        pagination,
-    });
-});
+        return c.json({
+            data: tracks,
+            pagination,
+        });
+    },
+);
 
 const getTrackByID: DescribeRouteOptions = {
     operationId: 'getTrackByID',
@@ -66,11 +72,11 @@ const getTrackByID: DescribeRouteOptions = {
     },
 };
 
-tracks.get('/:id', describeRoute(getTrackByID), validator('param', paramSchema), async (c) => {
+trackRoutes.get('/:id', describeRoute(getTrackByID), validator('param', paramSchema), async (c) => {
     const { id } = c.req.valid('param');
 
-    const data = await db.query.track.findFirst({
-        where: eq(track.track_id, id),
+    const data = await db.query.tracks.findFirst({
+        where: eq(tracks.id, id),
         with: {
             album: {
                 with: {
@@ -85,4 +91,4 @@ tracks.get('/:id', describeRoute(getTrackByID), validator('param', paramSchema),
     return c.json(data);
 });
 
-export default tracks;
+export default trackRoutes;

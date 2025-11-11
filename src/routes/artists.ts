@@ -3,11 +3,11 @@ import { Hono } from 'hono';
 import { type DescribeRouteOptions, describeRoute, resolver, validator } from 'hono-openapi';
 import z from 'zod';
 import db from '@/db';
-import { artist } from '@/db/schema';
+import { artists } from '@/db/schema';
 import paginationMiddleware from '@/middleware/paginationMiddleware';
 import { artistSchema, paginationSchema, paramSchema, querySchema } from '@/utils/schema';
 
-const artists = new Hono();
+const artistRoutes = new Hono();
 
 const paginatedResponseSchema = z.object({
     data: z.array(artistSchema),
@@ -28,15 +28,15 @@ const getArtists: DescribeRouteOptions = {
     },
 };
 
-artists.get(
+artistRoutes.get(
     '/',
     describeRoute(getArtists),
     validator('query', querySchema),
-    paginationMiddleware(artist),
+    paginationMiddleware(artists),
     async (c) => {
         const { offset, ...pagination } = c.get('pagination');
 
-        const artists = await db.query.artist.findMany({
+        const artists = await db.query.artists.findMany({
             limit: pagination.perPage,
             offset,
         });
@@ -62,14 +62,14 @@ const getArtistByID: DescribeRouteOptions = {
     },
 };
 
-artists.get('/:id', describeRoute(getArtistByID), validator('param', paramSchema), async (c) => {
+artistRoutes.get('/:id', describeRoute(getArtistByID), validator('param', paramSchema), async (c) => {
     const { id } = c.req.valid('param');
 
-    const data = await db.query.artist.findFirst({
-        where: eq(artist.artist_id, id),
+    const data = await db.query.artists.findFirst({
+        where: eq(artists.id, id),
     });
 
     return c.json({ data });
 });
 
-export default artists;
+export default artistRoutes;
