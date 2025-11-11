@@ -4,7 +4,9 @@ This project is a **testing ground for building complex frontends** backed by a 
 
 It uses **Bun**, **Hono**, **Drizzle ORM**, and **Better Auth** to power a lightweight, authenticated API for the classic [Chinook sample database](https://github.com/lerocha/chinook-database) — running on **PostgreSQL** via a custom Docker image that ships with the dataset preloaded.
 
-## While the main goal is to support frontend experimentation, the backend also serves as a demonstration of how quickly a fully featured and secure API can be built with new tools like **Bun**, **Hono**, and **Better Auth**.
+While the main goal is to support frontend experimentation, the backend also serves as a demonstration of how quickly a fully featured and secure API can be built with new tools like **Bun**, **Hono**, and **Better Auth**.
+
+---
 
 ## Why Bun + Hono?
 
